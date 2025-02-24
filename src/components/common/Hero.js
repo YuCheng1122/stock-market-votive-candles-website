@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
@@ -13,12 +14,27 @@ export default function Hero() {
 	const { data: session } = useSession()
 	const router = useRouter()
 
+	const [windowHeight, setWindowHeight] = useState(0)
+
+	useEffect(() => {
+		if (typeof window !== "undefined") {
+			setWindowHeight(window.innerHeight)
+			window.addEventListener("resize", () => setWindowHeight(window.innerHeight))
+		}
+
+		return () => {
+			if (typeof window !== "undefined")
+				window.removeEventListener("resize", () => setWindowHeight(window.innerHeight))
+		}
+	}, [])
+
 	const handleScrollDown = () => {
-		const screenHeight = window.innerHeight
-		window.scrollBy({
-			top: screenHeight - 72,
-			behavior: 'smooth',
-		})
+		if (typeof window !== 'undefined' && windowHeight) {
+			window.scrollBy({
+				top: windowHeight - 72,
+				behavior: 'smooth',
+			})
+		}
 	}
 
 	return (
